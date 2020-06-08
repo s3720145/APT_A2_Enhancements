@@ -35,6 +35,8 @@ public:
 
     int getScore() const;
 
+    int getRoundScore() const;
+
     void setStorage(string inputStorage);
 
     /**

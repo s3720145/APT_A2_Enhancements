@@ -44,6 +44,8 @@ private:
 
     // Argument Error check
     bool userTurnErrorCheck(string userTurn, std::vector<string>& userTurnArray, GameBoard* gameBoard);
+
+    void printHelp();
 };
 
 #endif // MAIN_MENU_H

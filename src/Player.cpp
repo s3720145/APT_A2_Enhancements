@@ -66,6 +66,10 @@ int Player::getScore() const {
     return totalScore;
 }
 
+int Player::getRoundScore() const {
+    return roundScore;
+}
+
 void Player::setStorage(string inputStorage) {
     int stringCounter = 0;
     for(int row_num = 0; row_num < ARRAY_DIM; ++row_num) {
@@ -154,26 +158,40 @@ void Player::printPlayerBoard() const {
         cout << row_num + 1 << ':';
         // Prints the storage rows
         for(int col_num = 1; col_num < ARRAY_DIM - row_num ; ++col_num) {
-            cout << ' ';
+            cout << "   ";
         }
         for(int col_num = row_num; col_num >= 0; --col_num) {
-            cout << getTileColourAsString(storage[row_num][col_num]);
+            Tile::getEscapeCodeChar(storage[row_num][col_num]);
         }
 
         // Prints the mosaic
         cout << "||";
         for(int col_num = 0; col_num < ARRAY_DIM; ++col_num) {
-            cout << mosaic[row_num][col_num];
+            if(islower(mosaic[row_num][col_num]) != 0) {
+                if(mosaic[row_num][col_num] == 'b') {
+                    cout << "\u001b[44m * \u001b[0m";
+                } else if(mosaic[row_num][col_num] == 'y') {
+                    cout << "\u001b[43m * \u001b[0m";
+                } else if(mosaic[row_num][col_num] == 'r') {
+                    cout << "\u001b[41m * \u001b[0m";
+                } else if(mosaic[row_num][col_num] == 'u') {
+                    cout << "\u001b[40m * \u001b[0m";
+                } else {
+                    cout << "\u001b[46m * \u001b[0m";
+                }
+            } else {
+                Tile::getEscapeCodeChar((Tile::Colour) mosaic[row_num][col_num]);
+            }
         }
         cout << std::endl;
     }
     cout << "broken: ";
     for(int i = 0; i <= numBrokenTiles - 1; ++i) {
-        cout << getTileColourAsString(brokenTiles[i]);
+        Tile::getEscapeCodeChar(brokenTiles[i]);
     }
     cout << std::endl;
 
-    cout << "Score this round: " << roundScore << std::endl;
+    //cout << "Score this round: " << roundScore << std::endl;
     cout << "Total score: " << totalScore << std::endl;
 }
 

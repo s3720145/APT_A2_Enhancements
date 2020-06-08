@@ -111,7 +111,9 @@ void MainMenu::newRound(GameBoard* gameBoard) {
 
     // Print player information
     playerOne->printPlayerBoard();
+    cout << "Score this round: " << playerOne->getRoundScore();
     playerTwo->printPlayerBoard();
+    cout << "Score this round: " << playerTwo->getRoundScore();
 
     // Reset centre factory
     gameBoard->getCentreFactory().clear();
@@ -315,7 +317,7 @@ string MainMenu::playerInput() {
 }
 
 bool MainMenu::userTurnErrorCheck(string userTurn, 
-                                std::vector<string>& userTurnArray, GameBoard* gameBoard) {
+    std::vector<string>& userTurnArray, GameBoard* gameBoard) {
     
     bool noErrors = true;
     
@@ -358,7 +360,13 @@ bool MainMenu::userTurnErrorCheck(string userTurn,
                     //escape
                     cout << "^D" << endl;
                 }
-                else {
+                else if(userTurnArray.at(0) == "help") {
+                    noErrors = false;
+                    // print help text
+                    printHelp();
+                    userTurnArray.clear();
+                    cin.clear();
+                } else {
                     noErrors = false;
                     userTurnArray.clear();
                     cout << "Incorrect number of arguments" << endl;
@@ -446,7 +454,7 @@ void MainMenu::printFactories(GameBoard* gameBoard) {
     cout << "0: ";
     for (Tile::Colour tile: gameBoard->getCentreFactory()) {
         if (Tile::getTileColourAsString(tile) != '.') {
-            cout << Tile::getTileColourAsString(tile);
+            Tile::getEscapeCodeChar(tile);
         }
     }
     cout << endl;
@@ -457,7 +465,7 @@ void MainMenu::printFactories(GameBoard* gameBoard) {
         for (int j = 0; j < FACTORY_WIDTH; j++) {
             Tile::Colour tile = gameBoard->getFactoryTile(i, j);
             if (Tile::getTileColourAsString(tile) != '.') {
-                cout << Tile::getTileColourAsString(gameBoard->getFactoryTile(i, j));
+                Tile::getEscapeCodeChar(gameBoard->getFactoryTile(i, j));
             }
         }
         cout << endl;
@@ -505,34 +513,8 @@ bool MainMenu::isEndOfRound(GameBoard* gameBoard) {
 
 void MainMenu::printCurrentPlayerMozaic(GameBoard* gameBoard) {
     Player* currentPlayer = gameBoard->getCurrentPlayer();
-    // Print current player mozaic
-    cout << "Mozaic for " << currentPlayer->getPlayerName() << ":" << endl;
-    for (int row_num = 0; row_num < ARRAY_DIM; ++row_num) {
-        cout << row_num + 1 << ": ";
-        // Prints the storage rows
-        for(int col_num = 1; col_num < ARRAY_DIM - row_num ; ++col_num) {
-            cout << ' ';
-        }
-        for(int col_num = row_num; col_num >= 0; --col_num) {
-            Tile::Colour tile = *currentPlayer->getStorageTile(row_num, col_num);
-            cout << Tile::getTileColourAsString(tile);
-        }
-
-        // Prints the mosaic
-        cout << "||";
-        
-        for(int col_num = 0; col_num < ARRAY_DIM; ++col_num) {
-            cout << *currentPlayer->getMosaicTile(row_num, col_num);
-        }
-        
-        cout << std::endl;
-    }
     
-    // Print broken tiles
-    cout << "broken: ";
-    for (int i = 0; i <= currentPlayer->getNumBrokenTiles() - 1; ++i) {
-        cout << Tile::getTileColourAsString(*currentPlayer->getBrokenTile(i));
-    }
+    currentPlayer->printPlayerBoard();
 
     // Set current player pointer to null
     currentPlayer = nullptr;
@@ -835,6 +817,15 @@ void MainMenu::showCredits(int seed) {
     }
 
     displayMenu(seed);
+}
+
+void MainMenu::printHelp() {
+    cout << endl << "--- COMMANDS ---" << endl
+    << "*To play a user turn: " << endl
+    << "turn <Factory> <Tile> <Storage Row>" << endl
+    << "*To save game state: " << endl 
+    << "save <save file name>.<extension>" << endl
+    << "*To quit type: Ctrl + D" << endl;
 }
 
 void MainMenu::quit() {
